@@ -1,4 +1,4 @@
-﻿import { useState, useEffect } from 'react'
+import { useState, useEffect } from 'react'
 import type { WorksData, Work, Category } from '../types'
 
 export function useWorks() {
@@ -7,7 +7,7 @@ export function useWorks() {
   const [error, setError] = useState<string | null>(null)
 
   useEffect(() => {
-    fetch('/data/works.json')
+    fetch('./data/works.json')
       .then(res => {
         if (!res.ok) throw new Error('Failed to load works data')
         return res.json()
