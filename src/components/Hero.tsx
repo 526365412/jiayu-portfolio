@@ -1,4 +1,4 @@
-import { useRef, useEffect, useCallback, useState } from 'react'
+import { useRef, useState } from 'react'
 import { motion } from 'framer-motion'
 import type { HeroContent } from '../types'
 
@@ -7,71 +7,33 @@ interface HeroProps {
 }
 
 export default function Hero({ content }: HeroProps) {
-  const video1Ref = useRef<HTMLVideoElement>(null)
-  const video2Ref = useRef<HTMLVideoElement>(null)
   const [activeVideo, setActiveVideo] = useState<1 | 2>(1)
 
-  // 视频1自动播放
-  useEffect(() => {
-    const video = video1Ref.current
-    if (!video) return
-    video.play().catch(() => {})
-    
-    const handleEnded = () => {
-      video.currentTime = 0
-      video.play().catch(() => {})
-    }
-    video.addEventListener('ended', handleEnded)
-    return () => video.removeEventListener('ended', handleEnded)
-  }, [content.videoUrl])
-
-  // 手动切换视频
-  const switchVideo = (num: 1 | 2) => {
-    if (num === activeVideo) return
-    setActiveVideo(num)
-    
-    if (num === 2) {
-      video1Ref.current?.pause()
-      const v2 = video2Ref.current
-      if (v2) {
-        v2.currentTime = 0
-        v2.play().catch(() => {})
-      }
-    } else {
-      video2Ref.current?.pause()
-      const v1 = video1Ref.current
-      if (v1) {
-        v1.currentTime = 0
-        v1.play().catch(() => {})
-      }
-    }
-  }
+  const video1Url = content.videoUrl || './videos/1.mp4'
+  const video2Url = content.videoUrl2 || './videos/index.mp4'
 
   return (
     <section id="hero" className="relative w-full h-screen overflow-hidden">
       {/* 视频1 */}
-      {content.videoUrl && (
-        <video
-          ref={video1Ref}
-          className="fixed inset-0 w-full h-full object-cover z-0"
-          src={content.videoUrl}
-          muted
-          playsInline
-          loop
-        />
-      )}
+      <video
+        className="fixed inset-0 w-full h-full object-cover z-0"
+        src={video1Url}
+        muted
+        playsInline
+        loop
+        autoPlay
+        style={{ opacity: activeVideo === 1 ? 1 : 0, transition: 'opacity 1.5s ease' }}
+      />
       {/* 视频2 */}
-      {content.videoUrl2 && (
-        <video
-          ref={video2Ref}
-          className="fixed inset-0 w-full h-full object-cover"
-          src={content.videoUrl2}
-          muted
-          playsInline
-          loop
-          style={{ opacity: activeVideo === 2 ? 1 : 0, zIndex: activeVideo === 2 ? 1 : -1, transition: 'opacity 1.5s ease' }}
-        />
-      )}
+      <video
+        className="fixed inset-0 w-full h-full object-cover z-0"
+        src={video2Url}
+        muted
+        playsInline
+        loop
+        autoPlay
+        style={{ opacity: activeVideo === 2 ? 1 : 0, transition: 'opacity 1.5s ease' }}
+      />
 
       <div className="fixed inset-0 z-[2] bg-black/30 pointer-events-none" />
       <div className="fixed inset-0 z-[2] bg-gradient-to-b from-black/40 via-transparent to-black/60 pointer-events-none" />
@@ -117,23 +79,21 @@ export default function Hero({ content }: HeroProps) {
           </p>
         </motion.div>
 
-        {content.videoUrl2 && (
-          <motion.div
-            initial={{ opacity: 0 }}
-            animate={{ opacity: 1 }}
-            transition={{ delay: 1.2, duration: 1 }}
-            className="flex items-center gap-3 mt-6"
-          >
-            <button
-              onClick={() => switchVideo(1)}
-              className={`w-2.5 h-2.5 rounded-full transition-all duration-500 ${activeVideo === 1 ? 'bg-white scale-125' : 'bg-white/30 hover:bg-white/50'}`}
-            />
-            <button
-              onClick={() => switchVideo(2)}
-              className={`w-2.5 h-2.5 rounded-full transition-all duration-500 ${activeVideo === 2 ? 'bg-white scale-125' : 'bg-white/30 hover:bg-white/50'}`}
-            />
-          </motion.div>
-        )}
+        <motion.div
+          initial={{ opacity: 0 }}
+          animate={{ opacity: 1 }}
+          transition={{ delay: 1.2, duration: 1 }}
+          className="flex items-center gap-3 mt-6"
+        >
+          <button
+            onClick={() => setActiveVideo(1)}
+            className={`w-2.5 h-2.5 rounded-full transition-all duration-500 ${activeVideo === 1 ? 'bg-white scale-125' : 'bg-white/30 hover:bg-white/50'}`}
+          />
+          <button
+            onClick={() => setActiveVideo(2)}
+            className={`w-2.5 h-2.5 rounded-full transition-all duration-500 ${activeVideo === 2 ? 'bg-white scale-125' : 'bg-white/30 hover:bg-white/50'}`}
+          />
+        </motion.div>
 
         <motion.div
           initial={{ scaleX: 0 }}
