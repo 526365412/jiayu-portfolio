@@ -10,142 +10,67 @@ export default function Hero({ content }: HeroProps) {
   const video1Ref = useRef<HTMLVideoElement>(null)
   const video2Ref = useRef<HTMLVideoElement>(null)
   const [activeVideo, setActiveVideo] = useState<1 | 2>(1)
-  const opacity1Ref = useRef(0)
-  const opacity2Ref = useRef(0)
-  const animFrame1Ref = useRef<number>(0)
-  const animFrame2Ref = useRef<number>(0)
-  const isPlaying1Ref = useRef(false)
-  const isPlaying2Ref = useRef(false)
-  const initialized2Ref = useRef(false)
 
-  const animateOpacity = useCallback((frameRef: React.MutableRefObject<number>, opacityRef: React.MutableRefObject<number>, videoRef: React.RefObject<HTMLVideoElement | null>, target: number, duration: number) => {
-    if (frameRef.current) cancelAnimationFrame(frameRef.current)
-    const video = videoRef.current
-    if (!video) return
-    const startOpacity = opacityRef.current
-    const startTime = performance.now()
-    const step = (now: number) => {
-      const elapsed = now - startTime
-      const progress = Math.min(elapsed / duration, 1)
-      const eased = progress < 0.5 ? 2 * progress * progress : 1 - Math.pow(-2 * progress + 2, 2) / 2
-      const current = startOpacity + (target - startOpacity) * eased
-      video.style.opacity = String(current)
-      opacityRef.current = current
-      if (progress < 1) frameRef.current = requestAnimationFrame(step)
-    }
-    frameRef.current = requestAnimationFrame(step)
-  }, [])
-
+  // 视频1自动播放
   useEffect(() => {
     const video = video1Ref.current
-    if (!video || !content.videoUrl) return
-
-    const handleTimeUpdate = () => {
-      if (!isPlaying1Ref.current) return
-      const remaining = video.duration - video.currentTime
-      if (remaining <= 3 && remaining > 0) animateOpacity(animFrame1Ref, opacity1Ref, video1Ref, 0, 3000)
-    }
-
+    if (!video) return
+    video.play().catch(() => {})
+    
     const handleEnded = () => {
-      isPlaying1Ref.current = false
-      video.style.opacity = '0'
-      opacity1Ref.current = 0
-      setTimeout(() => {
-        video.currentTime = 0
-        video.play().then(() => {
-          isPlaying1Ref.current = true
-          animateOpacity(animFrame1Ref, opacity1Ref, video1Ref, 1, 3000)
-        })
-      }, 300)
+      video.currentTime = 0
+      video.play().catch(() => {})
     }
-
-    const handleCanPlay = () => {
-      if (!isPlaying1Ref.current) {
-        video.play().then(() => {
-          isPlaying1Ref.current = true
-          animateOpacity(animFrame1Ref, opacity1Ref, video1Ref, 1, 3000)
-        }).catch(() => {})
-      }
-    }
-
-    video.addEventListener('timeupdate', handleTimeUpdate)
     video.addEventListener('ended', handleEnded)
-    video.addEventListener('canplay', handleCanPlay)
+    return () => video.removeEventListener('ended', handleEnded)
+  }, [content.videoUrl])
 
-    return () => {
-      video.removeEventListener('timeupdate', handleTimeUpdate)
-      video.removeEventListener('ended', handleEnded)
-      video.removeEventListener('canplay', handleCanPlay)
-      if (animFrame1Ref.current) cancelAnimationFrame(animFrame1Ref.current)
-    }
-  }, [animateOpacity, content.videoUrl])
-
-  useEffect(() => {
-    const video = video2Ref.current
-    if (!video || !content.videoUrl2) return
-
-    const handleTimeUpdate = () => {
-      if (!isPlaying2Ref.current) return
-      const remaining = video.duration - video.currentTime
-      if (remaining <= 3 && remaining > 0) animateOpacity(animFrame2Ref, opacity2Ref, video2Ref, 0, 3000)
-    }
-
-    const handleEnded = () => {
-      isPlaying2Ref.current = false
-      video.style.opacity = '0'
-      opacity2Ref.current = 0
-      setTimeout(() => {
-        video.currentTime = 0
-        video.play().then(() => {
-          isPlaying2Ref.current = true
-          animateOpacity(animFrame2Ref, opacity2Ref, video2Ref, 1, 3000)
-        })
-      }, 300)
-    }
-
-    video.addEventListener('timeupdate', handleTimeUpdate)
-    video.addEventListener('ended', handleEnded)
-
-    return () => {
-      video.removeEventListener('timeupdate', handleTimeUpdate)
-      video.removeEventListener('ended', handleEnded)
-      if (animFrame2Ref.current) cancelAnimationFrame(animFrame2Ref.current)
-    }
-  }, [animateOpacity, content.videoUrl2])
-
+  // 手动切换视频
   const switchVideo = (num: 1 | 2) => {
     if (num === activeVideo) return
     setActiveVideo(num)
-
+    
     if (num === 2) {
-      animateOpacity(animFrame1Ref, opacity1Ref, video1Ref, 0, 1500)
-      const video2 = video2Ref.current
-      if (video2) {
-        if (!initialized2Ref.current) {
-          video2.currentTime = 0
-          initialized2Ref.current = true
-        }
-        setTimeout(() => {
-          video2.play().then(() => {
-            isPlaying2Ref.current = true
-            animateOpacity(animFrame2Ref, opacity2Ref, video2Ref, 1, 1500)
-          }).catch(() => {})
-        }, 500)
+      video1Ref.current?.pause()
+      const v2 = video2Ref.current
+      if (v2) {
+        v2.currentTime = 0
+        v2.play().catch(() => {})
       }
     } else {
-      isPlaying2Ref.current = false
-      animateOpacity(animFrame2Ref, opacity2Ref, video2Ref, 0, 1500)
-      setTimeout(() => animateOpacity(animFrame1Ref, opacity1Ref, video1Ref, 1, 1500), 500)
+      video2Ref.current?.pause()
+      const v1 = video1Ref.current
+      if (v1) {
+        v1.currentTime = 0
+        v1.play().catch(() => {})
+      }
     }
   }
 
   return (
     <section id="hero" className="relative w-full h-screen overflow-hidden">
+      {/* 视频1 */}
       {content.videoUrl && (
-        <video ref={video1Ref} className="fixed inset-0 w-full h-full object-cover z-0" src={content.videoUrl} muted playsInline style={{ opacity: 0 }} />
+        <video
+          ref={video1Ref}
+          className="fixed inset-0 w-full h-full object-cover z-0"
+          src={content.videoUrl}
+          muted
+          playsInline
+          loop
+        />
       )}
+      {/* 视频2 */}
       {content.videoUrl2 && (
-        <video ref={video2Ref} className="fixed inset-0 w-full h-full object-cover z-[1]" src={content.videoUrl2} muted playsInline style={{ opacity: 0 }} />
+        <video
+          ref={video2Ref}
+          className="fixed inset-0 w-full h-full object-cover"
+          src={content.videoUrl2}
+          muted
+          playsInline
+          loop
+          style={{ opacity: activeVideo === 2 ? 1 : 0, zIndex: activeVideo === 2 ? 1 : -1, transition: 'opacity 1.5s ease' }}
+        />
       )}
 
       <div className="fixed inset-0 z-[2] bg-black/30 pointer-events-none" />
@@ -161,7 +86,6 @@ export default function Hero({ content }: HeroProps) {
           PORTFOLIO
         </motion.p>
 
-        {/* 标题 - 放大2倍，不裁切 */}
         <motion.div
           initial={{ opacity: 0, y: 40, filter: 'blur(10px)' }}
           animate={{ opacity: 1, y: 0, filter: 'blur(0px)' }}
@@ -203,12 +127,10 @@ export default function Hero({ content }: HeroProps) {
             <button
               onClick={() => switchVideo(1)}
               className={`w-2.5 h-2.5 rounded-full transition-all duration-500 ${activeVideo === 1 ? 'bg-white scale-125' : 'bg-white/30 hover:bg-white/50'}`}
-              aria-label="视频 1"
             />
             <button
               onClick={() => switchVideo(2)}
               className={`w-2.5 h-2.5 rounded-full transition-all duration-500 ${activeVideo === 2 ? 'bg-white scale-125' : 'bg-white/30 hover:bg-white/50'}`}
-              aria-label="视频 2"
             />
           </motion.div>
         )}
