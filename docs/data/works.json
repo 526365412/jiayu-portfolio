@@ -5,8 +5,8 @@
                               "heading":  "I\u0027M JIAYU",
                               "subtitle":  "蒋嘉宇 • 导演 / 摄像师 / 剪辑师 / AIGC",
                               "scrollText":  "Scroll to explore",
-                              "videoUrl":  "/videos/1.mp4",
-                              "videoUrl2":  "/videos/index.mp4"
+                              "videoUrl":  "./videos/1.mp4",
+                              "videoUrl2":  "./videos/index.mp4"
                           },
                  "sections":  [
                                   {
