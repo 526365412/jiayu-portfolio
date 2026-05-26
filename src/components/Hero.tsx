@@ -22,8 +22,15 @@ export default function Hero({ content }: HeroProps) {
 
   return (
     <section id="hero" className="relative w-full h-screen overflow-hidden">
+      {/* 背景层 */}
       {isMobile ? (
-        <div className="fixed inset-0 z-0 bg-gradient-to-br from-[#1a1a2e] via-[#16213e] to-[#0f3460]" />
+        <>
+          {/* 手机端：图片背景 + 磨玻璃 */}
+          <div className="fixed inset-0 z-0">
+            <img src="./bg-mobile.png" alt="" className="w-full h-full object-cover" />
+          </div>
+          <div className="fixed inset-0 z-[1] bg-black/20 backdrop-blur-sm pointer-events-none" />
+        </>
       ) : (
         <>
           <video
@@ -47,9 +54,10 @@ export default function Hero({ content }: HeroProps) {
         </>
       )}
 
-      <div className="fixed inset-0 z-[2] bg-black/40 pointer-events-none" />
-      <div className="fixed inset-0 z-[2] bg-gradient-to-b from-black/50 via-transparent to-black/70 pointer-events-none" />
+      <div className="fixed inset-0 z-[2] bg-black/30 pointer-events-none" />
+      <div className="fixed inset-0 z-[2] bg-gradient-to-b from-black/40 via-transparent to-black/60 pointer-events-none" />
 
+      {/* Hero 文字 */}
       <div className="relative z-10 flex flex-col items-center justify-center h-full px-6 md:px-12 w-full">
         <motion.p
           initial={{ opacity: 0 }}
@@ -102,31 +110,30 @@ export default function Hero({ content }: HeroProps) {
             <button onClick={() => setActiveVideo(2)} className={`w-2.5 h-2.5 rounded-full transition-all duration-500 ${activeVideo === 2 ? 'bg-white scale-125' : 'bg-white/30 hover:bg-white/50'}`} />
           </motion.div>
         )}
-
-        <motion.div
-          initial={{ scaleX: 0 }}
-          animate={{ scaleX: 1 }}
-          transition={{ delay: 1.5, duration: 1.5, ease: [0.16, 1, 0.3, 1] }}
-          className="w-16 h-px bg-gradient-to-r from-transparent via-white/30 to-transparent mt-6"
-        />
       </div>
 
-      {/* 下滑指示 */}
+      {/* 下滑指示 - 更明显 */}
       <motion.div
         initial={{ opacity: 0 }}
         animate={{ opacity: 1 }}
         transition={{ duration: 1, delay: 2 }}
-        className="absolute bottom-8 md:bottom-10 left-1/2 -translate-x-1/2 z-10 flex flex-col items-center gap-2"
+        className="absolute bottom-6 md:bottom-10 left-1/2 -translate-x-1/2 z-10 flex flex-col items-center gap-1"
       >
-        <span className="text-white/40 text-[9px] tracking-[0.4em] uppercase">{content.scrollText || 'Scroll Down'}</span>
+        <span className="text-white/50 text-[10px] md:text-[11px] tracking-[0.3em] uppercase mb-2">Scroll Down</span>
         <motion.div
-          animate={{ y: [0, 12, 0] }}
-          transition={{ duration: 2, repeat: Infinity, ease: "easeInOut" }}
-          className="flex flex-col items-center"
+          animate={{ y: [0, 8, 0] }}
+          transition={{ duration: 1.5, repeat: Infinity, ease: "easeInOut" }}
         >
-          <div className="w-px h-8 bg-gradient-to-b from-white/40 to-transparent" />
-          <svg width="16" height="16" viewBox="0 0 16 16" fill="none" className="mt-1">
-            <path d="M4 6L8 10L12 6" stroke="rgba(255,255,255,0.4)" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round"/>
+          <svg width="28" height="28" viewBox="0 0 28 28" fill="none">
+            <path d="M7 11L14 18L21 11" stroke="rgba(255,255,255,0.6)" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"/>
+          </svg>
+        </motion.div>
+        <motion.div
+          animate={{ y: [0, 8, 0] }}
+          transition={{ duration: 1.5, repeat: Infinity, ease: "easeInOut", delay: 0.3 }}
+        >
+          <svg width="20" height="20" viewBox="0 0 20 20" fill="none" className="opacity-40">
+            <path d="M5 8L10 13L15 8" stroke="rgba(255,255,255,0.4)" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"/>
           </svg>
         </motion.div>
       </motion.div>
