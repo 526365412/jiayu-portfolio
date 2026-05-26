@@ -22,12 +22,8 @@ export default function Hero({ content }: HeroProps) {
 
   return (
     <section id="hero" className="relative w-full h-screen overflow-hidden">
-      {/* 视频 - 手机端显示封面图，电脑端播放视频 */}
       {isMobile ? (
-        <div
-          className="fixed inset-0 bg-cover bg-center z-0"
-          style={{ backgroundImage: `url(./favicon.svg)`, backgroundColor: '#111' }}
-        />
+        <div className="fixed inset-0 z-0 bg-gradient-to-br from-[#1a1a2e] via-[#16213e] to-[#0f3460]" />
       ) : (
         <>
           <video
@@ -115,14 +111,24 @@ export default function Hero({ content }: HeroProps) {
         />
       </div>
 
+      {/* 下滑指示 */}
       <motion.div
         initial={{ opacity: 0 }}
         animate={{ opacity: 1 }}
-        transition={{ duration: 1, delay: 2.5 }}
-        className="absolute bottom-10 left-1/2 -translate-x-1/2 z-10 flex flex-col items-center gap-3"
+        transition={{ duration: 1, delay: 2 }}
+        className="absolute bottom-8 md:bottom-10 left-1/2 -translate-x-1/2 z-10 flex flex-col items-center gap-2"
       >
-        <span className="text-white/30 text-[9px] tracking-[0.4em] uppercase">{content.scrollText}</span>
-        <motion.div animate={{ y: [0, 8, 0] }} transition={{ duration: 2.5, repeat: Infinity, ease: "easeInOut" }} className="w-px h-12 bg-gradient-to-b from-white/30 to-transparent" />
+        <span className="text-white/40 text-[9px] tracking-[0.4em] uppercase">{content.scrollText || 'Scroll Down'}</span>
+        <motion.div
+          animate={{ y: [0, 12, 0] }}
+          transition={{ duration: 2, repeat: Infinity, ease: "easeInOut" }}
+          className="flex flex-col items-center"
+        >
+          <div className="w-px h-8 bg-gradient-to-b from-white/40 to-transparent" />
+          <svg width="16" height="16" viewBox="0 0 16 16" fill="none" className="mt-1">
+            <path d="M4 6L8 10L12 6" stroke="rgba(255,255,255,0.4)" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round"/>
+          </svg>
+        </motion.div>
       </motion.div>
     </section>
   )
